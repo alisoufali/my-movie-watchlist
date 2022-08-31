@@ -11,7 +11,7 @@ class Config:
     DATABASE_PATH = None
 
     @classmethod
-    def load_config(cls, config_path: Optional[Path] = None) -> None:
+    def load_configs(cls, config_path: Optional[Path] = None) -> None:
         if config_path is None:
             config_path = cls.DEFAULT_CONFIG_PATH
         with open(file=config_path, mode="r") as config_file:
