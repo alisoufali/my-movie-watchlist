@@ -8,7 +8,7 @@ class Menu:
     WELCOME_MESSAGE = "Welcome to my movie watchlist application!"
 
     def __init__(self, indent: int = 2):
-        print(f"{self.WELCOME_MESSAGE}\n")
+        print(f"{self.WELCOME_MESSAGE}")
         self.message = self.__create_menu_message(indent=indent)
 
     def __create_menu_items(self, indent: int = 2) -> List[str]:
@@ -32,7 +32,7 @@ class Menu:
 
         menu_message = \
             (
-                "Please select one of the following options:"
+                "\nPlease select one of the following options:"
                 "\n"
                 f"{menu_items_string}"
                 "\n"
