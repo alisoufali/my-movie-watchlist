@@ -61,7 +61,8 @@ class UserFunctions:
         )
 
     @classmethod
-    def view_all_movies(cls, timezone: pytz.BaseTzInfo = None, indent: int = 4) -> None:
+    def view_all_movies(cls, timezone: pytz.BaseTzInfo = None,
+                        indent: int = 4) -> None:
         cursor = Database.select_movies(
             upcomming=False, order=True,
             order_by="title", ascending=True
