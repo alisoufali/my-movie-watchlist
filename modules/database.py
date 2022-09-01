@@ -18,6 +18,7 @@ class Database:
     @classmethod
     def __create_tables(cls) -> None:
         cls.__create_movies_table()
+        cls.__create_watched_table()
 
     @classmethod
     def __create_movies_table(cls) -> None:
@@ -25,9 +26,20 @@ class Database:
         columns = [
             Column(column_name="title", column_type="TEXT"),
             Column(column_name="release_timestamp", column_type="REAL"),
-            Column(column_name="watched", column_type="INT")
         ]
         query = Query.create_table(table).\
+            if_not_exists().columns(*columns)
+        with cls.__connection:
+            cls.__connection.execute(query.get_sql())
+
+    @classmethod
+    def __create_watched_table(cls) -> None:
+        table = Table("watched")
+        columns = [
+            Column(column_name="watcher_name", column_type="TEXT"),
+            Column(column_name="title", column_type="TEXT")
+        ]
+        query = Query.create_table(table=table).\
             if_not_exists().columns(*columns)
         with cls.__connection:
             cls.__connection.execute(query.get_sql())
@@ -37,20 +49,18 @@ class Database:
                      release_date_timestamp: float = None) -> None:
         table = Table(name="movies")
         query = Query.into(table=table).\
-            columns("title", "release_timestamp", "watched").\
-            insert(Parameter("?"), Parameter("?"), 0)
+            columns("title", "release_timestamp").\
+            insert(Parameter("?"), Parameter("?"))
         parameters = (title, release_date_timestamp)
         with cls.__connection:
             cls.__connection.execute(query.get_sql(), parameters)
 
     @classmethod
-    def select_movies(cls, upcomming: bool = False,
-                      filter_watch: bool = False,
-                      watched: bool = None,
-                      today_timestamp: float = None,
-                      order: bool = False,
-                      order_by: str = "date",
-                      ascending: bool = True) -> sqlite3.Cursor:
+    def select_movies_from_movies(cls, upcomming: bool = False,
+                                  today_timestamp: float = None,
+                                  order: bool = False,
+                                  order_by: str = "date",
+                                  ascending: bool = True) -> sqlite3.Cursor:
 
         table = Table(name="movies")
 
@@ -61,13 +71,6 @@ class Database:
         else:
             query = Query.from_(table=table).select("*")
             parameters = tuple()
-
-        if filter_watch:
-            query = query.where(table.watched == Parameter("?"))
-            if watched:
-                parameters = parameters + (1, )
-            else:
-                parameters = parameters + (0, )
 
         if order:
             if order_by == "date":
@@ -93,3 +96,22 @@ class Database:
             table.title == title)
         with cls.__connection:
             cls.__connection.execute(query.get_sql())
+
+    @classmethod
+    def select_movies_from_watched(cls, username: str = None,
+                                   order: bool = False,
+                                   ascending: bool = True) -> sqlite3.Cursor:
+        table = Table("watched")
+        query = Query.from_(table=table).select(table.title).\
+            where(table.watcher_name == Parameter("?"))
+        if order:
+            orderby_column = table.title
+            if ascending:
+                order_pattern = Order.asc
+            else:
+                order_pattern = Order.desc
+            query = query.orderby(orderby_column, order=order_pattern)
+        parameters = (username, )
+        cursor = cls.__connection.cursor()
+        cursor.execute(query.get_sql(), parameters)
+        return cursor

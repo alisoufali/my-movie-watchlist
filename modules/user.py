@@ -10,9 +10,9 @@ from modules.utilities import Utilities
 class UserUtilities:
 
     @staticmethod
-    def view_movies_in_cursor(cursor: sqlite3.Cursor = None,
-                              timezone: pytz.BaseTzInfo = None,
-                              header: str = None, indent: int = 4) -> None:
+    def view_movies_from_movies(cursor: sqlite3.Cursor = None,
+                                timezone: pytz.BaseTzInfo = None,
+                                header: str = None, indent: int = 4) -> None:
         if cursor.arraysize > 0:
             indentation = " " * indent
             print(f"\n{indentation}-- {header} --\n")
@@ -24,6 +24,18 @@ class UserUtilities:
                 release_date_string = release_date.strftime("%b %d %Y")
                 output_string = \
                     f"{indentation}{title}:    {release_date_string}"
+                print(output_string)
+
+    @staticmethod
+    def view_watched_movies_from_watched(cursor: sqlite3.Cursor = None,
+                                         username: str = None,
+                                         indent: int = 4) -> None:
+        if cursor.arraysize > 0:
+            indentation = " " * indent
+            print(f"\n{indentation}-- {username}'s Watched Movies --\n")
+            for movie in cursor:
+                title = movie["title"]
+                output_string = f"{indentation}{title}"
                 print(output_string)
 
 
@@ -51,24 +63,24 @@ class UserFunctions:
             local_dt=today_date_local, timezone=timezone
         )
         today_timestamp = today_date.timestamp()
-        cursor = Database.select_movies(
+        cursor = Database.select_movies_from_movies(
             upcomming=True, today_timestamp=today_timestamp,
             order=True, order_by="date", ascending=True
         )
         header = "Upcomming Movies"
-        UserUtilities.view_movies_in_cursor(
+        UserUtilities.view_movies_from_movies(
             cursor=cursor, timezone=timezone, header=header, indent=indent
         )
 
     @classmethod
     def view_all_movies(cls, timezone: pytz.BaseTzInfo = None,
                         indent: int = 4) -> None:
-        cursor = Database.select_movies(
+        cursor = Database.select_movies_from_movies(
             upcomming=False, order=True,
             order_by="title", ascending=True
         )
         header = "All Movies"
-        UserUtilities.view_movies_in_cursor(
+        UserUtilities.view_movies_from_movies(
             cursor=cursor, timezone=timezone, header=header, indent=indent
         )
 
@@ -77,13 +89,12 @@ class UserFunctions:
         Database.update_movie_watched(title=title, is_watched=True)
 
     @classmethod
-    def view_watched_movies(cls, timezone: pytz.BaseTzInfo = None,
+    def view_watched_movies(cls, username: str = None,
                             indent: int = 4) -> None:
-        cursor = Database.select_movies(
-            filter_watch=True, watched=True, order=True,
-            order_by="date", ascending=True
+        cursor = Database.select_movies_from_watched(
+            username=username, order=True,
+            order_by="title", ascending=True
         )
-        header = "Watched Movies"
-        UserUtilities.view_movies_in_cursor(
-            cursor=cursor, timezone=timezone, header=header, indent=indent
+        UserUtilities.view_watched_movies_from_watched(
+            cursor=cursor, username=username, indent=indent
         )

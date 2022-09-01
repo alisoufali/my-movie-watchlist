@@ -44,13 +44,15 @@ class Main:
             elif user_input == \
                     MenuFunctionalities.WATCH_A_MOVIE.value:
                 title = input("Movie title: ")
+                username = input("Username: ")
                 UserFunctions.watch_movie(
                     title=title
                 )
             elif user_input == \
                     MenuFunctionalities.VIEW_WATCHED_MOVIES.value:
+                username = input("Username: ")
                 UserFunctions.view_watched_movies(
-                    timezone=timezone, indent=2*indent
+                    username=username, indent=2*indent
                 )
             else:
                 print("Invalid input please try again.")
