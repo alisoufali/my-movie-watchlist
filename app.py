@@ -43,10 +43,10 @@ class Main:
                 )
             elif user_input == \
                     MenuFunctionalities.WATCH_A_MOVIE.value:
-                title = input("Movie title: ")
                 username = input("Username: ")
+                title = input("Movie title: ")
                 UserFunctions.watch_movie(
-                    title=title
+                    username=username, title=title
                 )
             elif user_input == \
                     MenuFunctionalities.VIEW_WATCHED_MOVIES.value:

@@ -45,13 +45,23 @@ class Database:
             cls.__connection.execute(query.get_sql())
 
     @classmethod
-    def insert_movie(cls, title: str = None,
-                     release_date_timestamp: float = None) -> None:
+    def insert_movie_to_movies(cls, title: str = None,
+                               release_date_timestamp: float = None) -> None:
         table = Table(name="movies")
         query = Query.into(table=table).\
             columns("title", "release_timestamp").\
             insert(Parameter("?"), Parameter("?"))
         parameters = (title, release_date_timestamp)
+        with cls.__connection:
+            cls.__connection.execute(query.get_sql(), parameters)
+
+    @classmethod
+    def insert_watched_movie_to_watched(cls, username: str = None,
+                                        title: str = None) -> None:
+        table = Table(name="watched")
+        query = Query.into(table=table).columns("watcher_name", "title").\
+            insert(Parameter("?"), Parameter("?"))
+        parameters = (username, title)
         with cls.__connection:
             cls.__connection.execute(query.get_sql(), parameters)
 
@@ -86,16 +96,6 @@ class Database:
         cursor = cls.__connection.cursor()
         cursor.execute(query.get_sql(), parameters)
         return cursor
-
-    @classmethod
-    def update_movie_watched(cls, title: str = None,
-                             is_watched: int = None) -> None:
-        table = Table(name="movies")
-        query = Query.update(table=table).set(
-            table.watched, int(is_watched)).where(
-            table.title == title)
-        with cls.__connection:
-            cls.__connection.execute(query.get_sql())
 
     @classmethod
     def select_movies_from_watched(cls, username: str = None,

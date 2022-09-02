@@ -50,7 +50,7 @@ class UserFunctions:
             local_dt=release_date_local, timezone=timezone
         )
         release_date_timestamp = release_date_utc.timestamp()
-        Database.insert_movie(
+        Database.insert_movie_to_movies(
             title=title,
             release_date_timestamp=release_date_timestamp
         )
@@ -85,16 +85,29 @@ class UserFunctions:
         )
 
     @classmethod
-    def watch_movie(cls, title: str = None):
-        Database.update_movie_watched(title=title, is_watched=True)
-
-    @classmethod
     def view_watched_movies(cls, username: str = None,
                             indent: int = 4) -> None:
         cursor = Database.select_movies_from_watched(
-            username=username, order=True,
-            order_by="title", ascending=True
+            username=username, order=True, ascending=True
         )
         UserUtilities.view_watched_movies_from_watched(
             cursor=cursor, username=username, indent=indent
         )
+
+    @classmethod
+    def watch_movie(cls, username: str = None, title: str = None):
+        all_movies_in_movies = Database.select_movies_from_movies(
+            upcomming=False, order=False
+        ).fetchall()
+        found_movie_in_movies = False
+        for movie in all_movies_in_movies:
+            if movie["title"] == title:
+                found_movie_in_movies = True
+                break
+        else:
+            print("\nMovie not found in movies table.\n"
+                  "Please add it there first.")
+        if found_movie_in_movies:
+            Database.insert_watched_movie_to_watched(
+                username=username, title=title
+            )
