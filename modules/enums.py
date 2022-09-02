@@ -4,12 +4,14 @@ from typing import List
 
 class MenuFunctionalities(Enum):
 
-    ADD_MOVIE = 1
-    VIEW_UPCOMMING_MOVIES = 2
-    VIEW_ALL_MOVIES = 3
-    WATCH_A_MOVIE = 4
-    VIEW_WATCHED_MOVIES = 5
-    EXIT = 6
+    ADD_USER = 1
+    ADD_MOVIE = 2
+    WATCH_A_MOVIE = 3
+    VIEW_ALL_USERS = 4
+    VIEW_ALL_MOVIES = 5
+    VIEW_UPCOMMING_MOVIES = 6
+    VIEW_WATCHED_MOVIES = 7
+    EXIT = 8
 
     @classmethod
     def get_sorted_functionalities(cls) -> List:
