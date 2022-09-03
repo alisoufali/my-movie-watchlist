@@ -22,6 +22,7 @@ class Database:
         cls.__create_users_table()
         cls.__create_movies_table()
         cls.__create_watch_list_table()
+        cls.__create_index_on_movies()
 
     @classmethod
     def __create_users_table(cls) -> None:
@@ -68,6 +69,16 @@ class Database:
             ')'
         with cls.__connection:
             cls.__connection.execute(query_string)
+
+    @classmethod
+    def __create_index_on_movies(cls) -> None:
+        # Pypika does not support create index at the moment.
+        query = (
+            "CREATE INDEX IF NOT EXISTS idx_movies_release_timestamp "
+            "ON movies(release_timestamp)"
+        )
+        with cls.__connection:
+            cls.__connection.execute(query)
 
     @classmethod
     def get_user_id_by_username(cls, username: str = None) -> Union[int, None]:
