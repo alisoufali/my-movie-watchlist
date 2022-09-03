@@ -63,6 +63,13 @@ class Main:
                     username=username, timezone=timezone,
                     indent=2*indent
                 )
+            elif user_input == \
+                    MenuFunctionalities.SEARCH_MOVIE.value:
+                search_term = input("Input the partial movie title: ")
+                MenuFunctions.search_movie(
+                    search_term=search_term, timezone=timezone,
+                    indent=2*indent
+                )
             else:
                 print("Invalid input please try again.")
 

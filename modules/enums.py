@@ -11,7 +11,8 @@ class MenuFunctionalities(Enum):
     VIEW_ALL_MOVIES = 5
     VIEW_UPCOMMING_MOVIES = 6
     VIEW_WATCHED_MOVIES = 7
-    EXIT = 8
+    SEARCH_MOVIE = 8
+    EXIT = 9
 
     @classmethod
     def get_sorted_functionalities(cls) -> List:

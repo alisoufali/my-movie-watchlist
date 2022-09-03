@@ -2,6 +2,7 @@ import sqlite3
 from typing import Union
 
 from pypika import Column, Order, Parameter, Query, Table, JoinType
+from pypika.functions import Lower
 
 from modules.config import Config
 
@@ -264,6 +265,34 @@ class Database:
                 orderby_column = movies_table.title
             elif order_by == "date":
                 orderby_column = movies_table.release_timestamp
+
+            if ascending:
+                order_pattern = Order.asc
+            else:
+                order_pattern = Order.desc
+            query = query.orderby(orderby_column, order=order_pattern)
+
+        cursor = cls.__connection.cursor()
+        cursor.execute(query.get_sql(), parameters)
+        return cursor
+
+    @classmethod
+    def select_searched_movies(cls, search_term: str = None,
+                               order: bool = False,
+                               order_by: str = "title",
+                               ascending: bool = True
+                               ) -> sqlite3.Cursor:
+        table = Table("movies")
+
+        query = Query.from_(table=table).select("*").\
+            where(Lower(table.title).like(Parameter("?")))
+        parameters = (f"%{search_term}%", )
+
+        if order:
+            if order_by == "title":
+                orderby_column = table.title
+            elif order_by == "date":
+                orderby_column = table.release_timestamp
 
             if ascending:
                 order_pattern = Order.asc

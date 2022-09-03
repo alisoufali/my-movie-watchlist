@@ -125,6 +125,20 @@ class MenuFunctions:
             header=header, indent=indent
         )
 
+    @classmethod
+    def search_movie(cls, search_term: str = None,
+                     timezone: pytz.BaseTzInfo = None,
+                     indent: int = 4):
+        cursor = Database.select_searched_movies(
+            search_term=search_term, order=True,
+            order_by="title", ascending=True
+        )
+        header = f"Found Movies like {search_term}"
+        MenuUtilities.view_movies(
+            cursor=cursor, timezone=timezone,
+            header=header, indent=indent
+        )
+
 
 class Menu:
 
