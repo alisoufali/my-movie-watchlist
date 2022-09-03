@@ -286,7 +286,7 @@ class Database:
 
         query = Query.from_(table=table).select("*").\
             where(Lower(table.title).like(Parameter("?")))
-        parameters = (f"%{search_term}%", )
+        parameters = (f"%{search_term.lower()}%", )
 
         if order:
             if order_by == "title":
